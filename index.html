@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcolatore Costi Auto</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .app-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background: #ecf0f1;
+            border-bottom: 2px solid #bdc3c7;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 500;
+            color: #7f8c8d;
+            transition: all 0.3s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab:hover {
+            background: #dfe6e9;
+        }
+
+        .tab.active {
+            color: #2c3e50;
+            background: white;
+            border-bottom-color: #3498db;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 24px;
+            animation: fadeIn 0.3s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Form Elements */
+        .form-section {
+            margin-bottom: 24px;
+        }
+
+        .form-section h3 {
+            color: #2c3e50;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #555;
+            margin-bottom: 6px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        /* Toggle Switch */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 56px;
+            height: 28px;
+            background: #bdc3c7;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: #3498db;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(28px);
+        }
+
+        .toggle-label {
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        /* Button */
+        button {
+            padding: 14px 24px;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.secondary {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        }
+
+        button.danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        /* Results Box */
+        .results-box {
+            background: linear-gradient(135deg, #ecf0f1 0%, #dfe6e9 100%);
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 24px;
+        }
+
+        .results-box h3 {
+            color: #2c3e50;
+            font-size: 18px;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #bdc3c7;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            color: #555;
+            font-size: 14px;
+        }
+
+        .result-value {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 14px;
+        }
+
+        .result-total {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 3px solid #3498db;
+        }
+
+        .result-total .result-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .result-total .result-value {
+            font-size: 20px;
+            color: #3498db;
+        }
+
+        /* Comparison Table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table th {
+            background: #34495e;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .comparison-table td {
+            padding: 12px;
+            border-bottom: 1px solid #ecf0f1;
+            font-size: 14px;
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table .total-row {
+            background: #ecf0f1;
+            font-weight: 600;
+        }
+
+        .comparison-table .grand-total-row {
+            background: #3498db;
+            color: white;
+            font-weight: 700;
+        }
+
+        /* Saved Configs */
+        .config-list {
+            display: grid;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .config-item {
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .config-item:hover {
+            border-color: #3498db;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.2);
+        }
+
+        .config-info h4 {
+            color: #2c3e50;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        .config-info p {
+            color: #7f8c8d;
+            font-size: 12px;
+        }
+
+        .config-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .config-actions button {
+            padding: 8px 12px;
+            font-size: 12px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        /* Conditional Fields */
+        .conditional-field {
+            display: none;
+        }
+
+        .conditional-field.show {
+            display: block;
+        }
+
+        /* Comparison conditional fields - hidden by default */
+        #power2Field,
+        #maintenance2Field,
+        #serviceCost2Field,
+        #purchasePrice2Field {
+            display: none;
+        }
+
+        #power2Field.show,
+        #maintenance2Field.show,
+        #serviceCost2Field.show,
+        #purchasePrice2Field.show {
+            display: block;
+        }
+
+        /* Margins Section */
+        .margins-section {
+            background: #fff9e6;
+            border: 1px solid #ffd700;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .margins-section h4 {
+            color: #856404;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .comparison-table {
+                font-size: 12px;
+            }
+
+            .comparison-table th,
+            .comparison-table td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="app-card">
+            <div class="header">
+                <h1>🚗 Calcolatore Costi Auto</h1>
+                <p>Confronta i costi reali delle diverse motorizzazioni</p>
+            </div>
+
+            <div class="tabs">
+                <div class="tab active" onclick="switchTab(0)">📊 Calcolo Base</div>
+                <div class="tab" onclick="switchTab(1)">🔄 Confronto</div>
+                <div class="tab" onclick="switchTab(2)">💾 Configurazioni</div>
+            </div>
+
+            <!-- TAB 1: Calcolo Base -->
+            <div class="tab-content active">
+                <div class="toggle-container">
+                    <span class="toggle-label">Singola Tratta</span>
+                    <div class="toggle-switch" onclick="toggleCalculationType()">
+                        <div class="toggle-slider"></div>
+                    </div>
+                    <span class="toggle-label">Km Annui</span>
+                </div>
+
+                <div class="form-section">
+                    <h3>🛣️ Dati Percorrenza</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="kmTotal">Km Totali</label>
+                            <input type="number" id="kmTotal" placeholder="es. 20000" value="20000">
+                        </div>
+                        <div class="form-group conditional-field" id="yearsField">
+                            <label for="years">Numero Anni</label>
+                            <input type="number" id="years" placeholder="es. 5" value="5" min="1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>⚙️ Motorizzazione</h3>
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label for="engineType">Tipo Motorizzazione</label>
+                            <select id="engineType" onchange="updateConsumptionUnit()">
+                                <option value="">Seleziona...</option>
+                                <option value="benzina">⛽ Benzina</option>
+                                <option value="diesel">🛢️ Diesel</option>
+                                <option value="elettrica">⚡ Elettrica</option>
+                                <option value="plugin">🔋 Plug-In</option>
+                                <option value="gpl">🌿 GPL</option>
+                                <option value="metano">💨 Metano</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="consumption">Consumo Medio <span id="consumptionUnit"></span></label>
+                            <input type="number" id="consumption" placeholder="es. 15" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label for="fuelCost">Costo Carburante <span id="fuelCostUnit"></span></label>
+                            <input type="number" id="fuelCost" placeholder="es. 1.75" step="0.01">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section margins-section">
+                    <h4>📊 Margini di Scostamento (opzionale)</h4>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="marginKm">Margine Km (%)</label>
+                            <input type="number" id="marginKm" placeholder="es. 10" value="0" step="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="marginConsumption">Margine Consumo (%)</label>
+                            <input type="number" id="marginConsumption" placeholder="es. 5" value="0" step="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="marginPrice">Margine Prezzo (%)</label>
+                            <input type="number" id="marginPrice" placeholder="es. -3" value="0" step="1">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section conditional-field" id="fixedCostsSection">
+                    <h3>💰 Costi Fissi (Annuali)</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="purchasePrice">🏷️ Prezzo di Acquisto (€)</label>
+                            <input type="number" id="purchasePrice" placeholder="es. 35000" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="power" id="powerLabel">Potenza (CV)</label>
+                            <input type="number" id="power" placeholder="es. 150">
+                        </div>
+                        <div class="form-group">
+                            <label for="vehicleAge">Età Veicolo (anni)</label>
+                            <input type="number" id="vehicleAge" placeholder="es. 0 se nuovo" value="0" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="insurance">Assicurazione Annua (€)</label>
+                            <input type="number" id="insurance" placeholder="es. 800" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="revisionCost">Costo Revisione (€)</label>
+                            <input type="number" id="revisionCost" placeholder="es. 80" value="80">
+                        </div>
+                        <div class="form-group">
+                            <label for="maintenance">Manutenzione Straordinaria Annua (€)</label>
+                            <input type="number" id="maintenance" placeholder="es. 500" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="serviceCost">Costo Tagliando (€)</label>
+                            <input type="number" id="serviceCost" placeholder="es. 200" value="0">
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="calculate()" style="width: 100%; margin-top: 16px;">🧮 CALCOLA COSTI</button>
+
+                <div id="resultsBox" class="results-box" style="display: none;">
+                    <h3>💵 Riepilogo Costi</h3>
+                    <div id="resultsContent"></div>
+                </div>
+
+                <button onclick="saveConfiguration()" style="width: 100%; margin-top: 16px;" class="secondary">💾 SALVA CONFIGURAZIONE</button>
+            </div>
+
+            <!-- TAB 2: Confronto -->
+            <div class="tab-content">
+                <h3 style="margin-bottom: 16px;">🔄 Confronto Motorizzazioni</h3>
+                <p style="color: #7f8c8d; margin-bottom: 20px;">Compila il Calcolo Base, poi aggiungi qui i dati della seconda motorizzazione per confrontare</p>
+
+                <div class="form-section">
+                    <h3>⚙️ Motorizzazione B</h3>
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label for="engineType2">Tipo Motorizzazione</label>
+                            <select id="engineType2" onchange="updateConsumptionUnit2()">
+                                <option value="">Seleziona...</option>
+                                <option value="benzina">⛽ Benzina</option>
+                                <option value="diesel">🛢️ Diesel</option>
+                                <option value="elettrica">⚡ Elettrica</option>
+                                <option value="plugin">🔋 Plug-In</option>
+                                <option value="gpl">🌿 GPL</option>
+                                <option value="metano">💨 Metano</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="consumption2">Consumo Medio <span id="consumptionUnit2"></span></label>
+                            <input type="number" id="consumption2" placeholder="es. 18" step="0.1">
+                        </div>
+                        <div class="form-group">
+                            <label for="fuelCost2">Costo Carburante <span id="fuelCostUnit2"></span></label>
+                            <input type="number" id="fuelCost2" placeholder="es. 1.65" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label for="power2" id="powerLabel2">Potenza (CV)</label>
+                            <input type="number" id="power2" placeholder="es. 120">
+                        </div>
+                        <div class="form-group">
+                            <label for="maintenance2">Manutenzione Annua (€)</label>
+                            <input type="number" id="maintenance2" placeholder="es. 300" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="serviceCost2">Costo Tagliando (€)</label>
+                            <input type="number" id="serviceCost2" placeholder="es. 150" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="serviceInterval2">Frequenza Tagliando (anni)</label>
+                            <input type="number" id="serviceInterval2" placeholder="es. 1" value="1" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="purchasePrice2">🏷️ Prezzo di Acquisto (€)</label>
+                            <input type="number" id="purchasePrice2" placeholder="es. 25000" value="0">
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="compareMotorizations()" style="width: 100%; margin-top: 16px;">🔄 CONFRONTA</button>
+
+                <div id="comparisonResults" style="display: none; margin-top: 24px;"></div>
+            </div>
+
+            <!-- TAB 3: Configurazioni Salvate -->
+            <div class="tab-content">
+                <h3 style="margin-bottom: 16px;">💾 Configurazioni Salvate</h3>
+                <div id="configsList" class="config-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // App State
+        let currentTab = 0;
+        let isAnnual = false;
+        let savedConfigs = JSON.parse(localStorage.getItem('carConfigs') || '[]');
+        let lastCalculation = null;
+
+        // Initialize
+        window.onload = function() {
+            updateConsumptionUnit();
+            updateConsumptionUnit2();
+            loadSavedConfigs();
+            updateComparisonFieldsVisibility(); // Initialize comparison fields visibility
+        };
+
+        // Tab Switching
+        function switchTab(index) {
+            const tabs = document.querySelectorAll('.tab');
+            const contents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach((tab, i) => {
+                tab.classList.toggle('active', i === index);
+            });
+            
+            contents.forEach((content, i) => {
+                content.classList.toggle('active', i === index);
+            });
+            
+            currentTab = index;
+            
+            // Update Tab 2 (Confronto) visibility based on calculation type
+            if (index === 1) {
+                updateComparisonFieldsVisibility();
+            }
+            
+            if (index === 2) {
+                loadSavedConfigs();
+            }
+        }
+
+        // Toggle Calculation Type
+        function toggleCalculationType() {
+            isAnnual = !isAnnual;
+            const toggle = document.querySelector('.toggle-switch');
+            const yearsField = document.getElementById('yearsField');
+            const fixedCostsSection = document.getElementById('fixedCostsSection');
+            
+            toggle.classList.toggle('active', isAnnual);
+            
+            if (isAnnual) {
+                yearsField.classList.add('show');
+                fixedCostsSection.classList.add('show');
+            } else {
+                yearsField.classList.remove('show');
+                fixedCostsSection.classList.remove('show');
+            }
+            
+            // Update Tab 2 fields if it's currently visible
+            if (currentTab === 1) {
+                updateComparisonFieldsVisibility();
+            }
+        }
+
+        // Update Comparison Fields Visibility
+        function updateComparisonFieldsVisibility() {
+            const power2Field = document.getElementById('power2Field');
+            const maintenance2Field = document.getElementById('maintenance2Field');
+            const serviceCost2Field = document.getElementById('serviceCost2Field');
+            const purchasePrice2Field = document.getElementById('purchasePrice2Field');
+            
+            // Check if elements exist (they might not be loaded yet)
+            if (!power2Field || !maintenance2Field || !serviceCost2Field || !purchasePrice2Field) {
+                return;
+            }
+            
+            if (isAnnual) {
+                power2Field.classList.add('show');
+                maintenance2Field.classList.add('show');
+                serviceCost2Field.classList.add('show');
+                purchasePrice2Field.classList.add('show');
+            } else {
+                power2Field.classList.remove('show');
+                maintenance2Field.classList.remove('show');
+                serviceCost2Field.classList.remove('show');
+                purchasePrice2Field.classList.remove('show');
+            }
+        }
+
+        // Update Consumption Unit
+        function updateConsumptionUnit() {
+            const engineType = document.getElementById('engineType').value;
+            const consumptionUnit = document.getElementById('consumptionUnit');
+            const fuelCostUnit = document.getElementById('fuelCostUnit');
+            const powerLabel = document.getElementById('powerLabel');
+            
+            const units = {
+                'benzina': { consumption: '(km/litro)', fuel: '(€/litro)' },
+                'diesel': { consumption: '(km/litro)', fuel: '(€/litro)' },
+                'elettrica': { consumption: '(kWh/100km)', fuel: '(€/kWh)' },
+                'plugin': { consumption: '(km/litro)', fuel: '(€/litro)' },
+                'gpl': { consumption: '(km/litro)', fuel: '(€/litro)' },
+                'metano': { consumption: '(km/kg)', fuel: '(€/kg)' }
+            };
+            
+            if (units[engineType]) {
+                consumptionUnit.textContent = units[engineType].consumption;
+                fuelCostUnit.textContent = units[engineType].fuel;
+                
+                // Update power label
+                if (engineType === 'elettrica') {
+                    powerLabel.textContent = 'Potenza (kW)';
+                } else {
+                    powerLabel.textContent = 'Potenza (CV)';
+                }
+            } else {
+                consumptionUnit.textContent = '';
+                fuelCostUnit.textContent = '';
+                powerLabel.textContent = 'Potenza (CV)';
+            }
+        }
+
+        function updateConsumptionUnit2() {
+            const engineType = document.getElementById('engineType2').value;
+            const consumptionUnit = document.getElementById('consumptionUnit2');
+            const fuelCostUnit = document.getElementById('fuelCostUnit2');
+            const powerLabel2 = document.getElementById('powerLabel2');
+            
+            const units = {
+                'benzina': { consumption: '(km/litro)', fuel: '(€/litro)' },
+                'diesel': { consumption: '(km/litro)', fuel: '(€/litro)' },
+                'elettrica': { consumption: '(kWh/100km)', fuel: '(€/kWh)' },
+                'plugin': { consumption: '(km/litro)', fuel: '(€/litro)' },
+                'gpl': { consumption: '(km/litro)', fuel: '(€/litro)' },
+                'metano': { consumption: '(km/kg)', fuel: '(€/kg)' }
+            };
+            
+            if (units[engineType]) {
+                consumptionUnit.textContent = units[engineType].consumption;
+                fuelCostUnit.textContent = units[engineType].fuel;
+                
+                // Update power label
+                if (engineType === 'elettrica') {
+                    powerLabel2.textContent = 'Potenza (kW)';
+                } else {
+                    powerLabel2.textContent = 'Potenza (CV)';
+                }
+            } else {
+                consumptionUnit.textContent = '';
+                fuelCostUnit.textContent = '';
+                powerLabel2.textContent = 'Potenza (CV)';
+            }
+        }
+
+        // Calculate Road Tax (Bollo)
+        function calculateBollo(engineType, power, vehicleAge) {
+            if (!power || power <= 0) return 0;
+            
+            if (engineType === 'elettrica') {
+                // Power is in kW for electric
+                if (vehicleAge <= 5) return 0;
+                const standardBollo = power * 2.58;
+                return standardBollo * 0.25; // -75%
+            }
+            
+            if (engineType === 'plugin') {
+                // Power is in CV for plug-in
+                if (vehicleAge <= 3) return 0;
+                return power <= 100 ? power * 2.58 : 258 + (power - 100) * 3.87;
+            }
+            
+            // Power is in CV for all other engines
+            return power <= 100 ? power * 2.58 : 258 + (power - 100) * 3.87;
+        }
+
+        // Calculate Revision Cost
+        function calculateRevisionCost(vehicleAge, years, revisionCost) {
+            if (!revisionCost || revisionCost <= 0) return 0;
+            
+            let totalRevisions = 0;
+            
+            for (let year = vehicleAge; year < vehicleAge + years; year++) {
+                if (year === 4 || (year > 4 && (year - 4) % 2 === 0)) {
+                    totalRevisions++;
+                }
+            }
+            
+            return totalRevisions * revisionCost;
+        }
+
+        // Calculate Service Cost (Tagliando)
+        function calculateServiceCost(engineType, kmTotal, years, serviceCost) {
+            if (!serviceCost || serviceCost <= 0) return 0;
+            
+            // Definisci soglie km per motorizzazione
+            const kmThresholds = {
+                'benzina': 15000,
+                'diesel': 30000,
+                'elettrica': 30000,
+                'plugin': 15000,
+                'gpl': 15000,
+                'metano': 15000
+            };
+            
+            const threshold = kmThresholds[engineType] || 15000;
+            
+            // Calcola tagliandi per km (arrotondato per difetto)
+            const servicesByKm = Math.floor(kmTotal / threshold);
+            
+            // Calcola tagliandi per anni
+            const servicesByYears = years;
+            
+            // Prende il massimo tra i due (quello che si verifica prima più spesso)
+            const totalServices = Math.max(servicesByKm, servicesByYears);
+            
+            return totalServices * serviceCost;
+        }
+
+        // Calculate Fuel Cost
+        function calculateFuelCost(engineType, km, consumption, fuelCost, marginKm, marginConsumption, marginPrice) {
+            const effectiveKm = km * (1 + marginKm / 100);
+            const effectiveConsumption = consumption * (1 + marginConsumption / 100);
+            const effectivePrice = fuelCost * (1 + marginPrice / 100);
+            
+            if (engineType === 'elettrica') {
+                // kWh/100km
+                const kWhTotal = (effectiveKm / 100) * effectiveConsumption;
+                return kWhTotal * effectivePrice;
+            } else {
+                // km/litro or km/kg
+                const fuelTotal = effectiveKm / effectiveConsumption;
+                return fuelTotal * effectivePrice;
+            }
+        }
+
+        // Main Calculate Function
+        function calculate() {
+            const kmTotal = parseFloat(document.getElementById('kmTotal').value) || 0;
+            const years = isAnnual ? (parseFloat(document.getElementById('years').value) || 1) : 1;
+            const engineType = document.getElementById('engineType').value;
+            const consumption = parseFloat(document.getElementById('consumption').value) || 0;
+            const fuelCost = parseFloat(document.getElementById('fuelCost').value) || 0;
+            
+            const marginKm = parseFloat(document.getElementById('marginKm').value) || 0;
+            const marginConsumption = parseFloat(document.getElementById('marginConsumption').value) || 0;
+            const marginPrice = parseFloat(document.getElementById('marginPrice').value) || 0;
+            
+            if (!engineType || !kmTotal || kmTotal <= 0 || !consumption || consumption <= 0 || !fuelCost || fuelCost <= 0) {
+                alert('Compila tutti i campi obbligatori con valori validi!');
+                return;
+            }
+            
+            const totalKm = isAnnual ? kmTotal * years : kmTotal;
+            const fuelCostTotal = calculateFuelCost(engineType, totalKm, consumption, fuelCost, marginKm, marginConsumption, marginPrice);
+            
+            let bolloTotal = 0;
+            let insuranceTotal = 0;
+            let revisionTotal = 0;
+            let maintenanceTotal = 0;
+            let serviceTotal = 0;
+            let purchasePrice = 0;
+            
+            if (isAnnual) {
+                const power = parseFloat(document.getElementById('power').value) || 0;
+                const vehicleAge = parseFloat(document.getElementById('vehicleAge').value) || 0;
+                const insurance = parseFloat(document.getElementById('insurance').value) || 0;
+                const revisionCost = parseFloat(document.getElementById('revisionCost').value) || 0;
+                const maintenance = parseFloat(document.getElementById('maintenance').value) || 0;
+                const serviceCost = parseFloat(document.getElementById('serviceCost').value) || 0;
+                purchasePrice = parseFloat(document.getElementById('purchasePrice').value) || 0;
+                
+                for (let i = 0; i < years; i++) {
+                    bolloTotal += calculateBollo(engineType, power, vehicleAge + i);
+                }
+                
+                insuranceTotal = insurance * years;
+                revisionTotal = calculateRevisionCost(vehicleAge, years, revisionCost);
+                maintenanceTotal = maintenance * years;
+                serviceTotal = calculateServiceCost(engineType, totalKm, years, serviceCost);
+            }
+            
+            const operativeCost = fuelCostTotal + bolloTotal + insuranceTotal + revisionTotal + maintenanceTotal + serviceTotal;
+            const grandTotal = operativeCost + purchasePrice;
+            const costPerKm = fuelCostTotal / totalKm;
+            
+            // Store last calculation
+            lastCalculation = {
+                kmTotal,
+                years,
+                engineType,
+                consumption,
+                fuelCost,
+                marginKm,
+                marginConsumption,
+                marginPrice,
+                power: parseFloat(document.getElementById('power').value) || 0,
+                vehicleAge: parseFloat(document.getElementById('vehicleAge').value) || 0,
+                insurance: parseFloat(document.getElementById('insurance').value) || 0,
+                revisionCost: parseFloat(document.getElementById('revisionCost').value) || 0,
+                maintenance: parseFloat(document.getElementById('maintenance').value) || 0,
+                serviceCost: parseFloat(document.getElementById('serviceCost').value) || 0,
+                purchasePrice,
+                results: {
+                    fuelCostTotal,
+                    bolloTotal,
+                    insuranceTotal,
+                    revisionTotal,
+                    maintenanceTotal,
+                    serviceTotal,
+                    operativeCost,
+                    purchasePrice,
+                    grandTotal,
+                    costPerKm,
+                    totalKm
+                }
+            };
+            
+            // Display Results
+            displayResults(lastCalculation.results);
+        }
+
+        function displayResults(results) {
+            const resultsBox = document.getElementById('resultsBox');
+            const resultsContent = document.getElementById('resultsContent');
+            
+            let html = '';
+            
+            if (isAnnual) {
+                const years = lastCalculation.years;
+                const insurance = lastCalculation.insurance;
+                const maintenance = lastCalculation.maintenance;
+                const revisionCost = lastCalculation.revisionCost;
+                const serviceCost = lastCalculation.serviceCost;
+                const serviceInterval = lastCalculation.serviceInterval;
+                
+                // Calcola numero revisioni e tagliandi
+                const numRevisions = results.revisionTotal / revisionCost;
+                const numServices = results.serviceTotal / serviceCost;
+                
+                const yearsText = years > 1 ? ` (${years} anni)` : '';
+                
+                html += `
+                    <div class="result-item">
+                        <span class="result-label">💰 Costo Carburante${yearsText}</span>
+                        <span class="result-value">€${results.fuelCostTotal.toFixed(2)}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">📄 Bollo${yearsText}</span>
+                        <span class="result-value">€${results.bolloTotal.toFixed(2)}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">🛡️ Assicurazione (€${insurance} × ${years} anni)</span>
+                        <span class="result-value">€${results.insuranceTotal.toFixed(2)}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">🔧 Manutenzione (€${maintenance} × ${years} anni)</span>
+                        <span class="result-value">€${results.maintenanceTotal.toFixed(2)}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">📋 Revisione (€${revisionCost} × ${numRevisions})</span>
+                        <span class="result-value">€${results.revisionTotal.toFixed(2)}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">🔩 Tagliando (€${serviceCost} × ${numServices})</span>
+                        <span class="result-value">€${results.serviceTotal.toFixed(2)}</span>
+                    </div>
+                    <div class="result-item result-total" style="border-top: 2px solid #bdc3c7; padding-top: 12px; margin-top: 8px;">
+                        <span class="result-label">💵 Totale Operativo</span>
+                        <span class="result-value">€${results.operativeCost.toFixed(2)}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">🏷️ Prezzo Acquisto</span>
+                        <span class="result-value">€${results.purchasePrice.toFixed(2)}</span>
+                    </div>
+                    <div class="result-item result-total">
+                        <span class="result-label">💰 TOTALE COMPLESSIVO</span>
+                        <span class="result-value">€${results.grandTotal.toFixed(2)}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">📊 Costo al km (operativo)</span>
+                        <span class="result-value">€${results.costPerKm.toFixed(3)}/km</span>
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div class="result-item">
+                        <span class="result-label">💰 Costo Carburante</span>
+                        <span class="result-value">€${results.fuelCostTotal.toFixed(2)}</span>
+                    </div>
+                    <div class="result-item result-total">
+                        <span class="result-label">💵 TOTALE</span>
+                        <span class="result-value">€${results.grandTotal.toFixed(2)}</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">📊 Costo al km</span>
+                        <span class="result-value">€${results.costPerKm.toFixed(3)}/km</span>
+                    </div>
+                `;
+            }
+            
+            resultsContent.innerHTML = html;
+            resultsBox.style.display = 'block';
+        }
+
+        // Compare Motorizations
+        function compareMotorizations() {
+            if (!lastCalculation) {
+                alert('Completa prima il Calcolo Base!');
+                return;
+            }
+            
+            const engineType2 = document.getElementById('engineType2').value;
+            const consumption2 = parseFloat(document.getElementById('consumption2').value) || 0;
+            const fuelCost2 = parseFloat(document.getElementById('fuelCost2').value) || 0;
+            
+            if (!engineType2 || !consumption2 || consumption2 <= 0 || !fuelCost2 || fuelCost2 <= 0) {
+                alert('Compila i campi obbligatori della Motorizzazione B!');
+                return;
+            }
+            
+            // For single trip mode
+            if (!isAnnual) {
+                const totalKm = lastCalculation.kmTotal;
+                const fuelCost2Total = calculateFuelCost(
+                    engineType2, 
+                    totalKm, 
+                    consumption2, 
+                    fuelCost2, 
+                    lastCalculation.marginKm,
+                    lastCalculation.marginConsumption,
+                    lastCalculation.marginPrice
+                );
+                
+                displayComparison(lastCalculation, {
+                    engineType: engineType2,
+                    fuelCostTotal: fuelCost2Total,
+                    bolloTotal: 0,
+                    insuranceTotal: 0,
+                    revisionTotal: 0,
+                    maintenanceTotal: 0,
+                    serviceTotal: 0,
+                    operativeCost: fuelCost2Total,
+                    purchasePrice: 0,
+                    grandTotal: fuelCost2Total
+                });
+                return;
+            }
+            
+            // For annual mode
+            const power2 = parseFloat(document.getElementById('power2').value) || 0;
+            const maintenance2 = parseFloat(document.getElementById('maintenance2').value) || 0;
+            const serviceCost2 = parseFloat(document.getElementById('serviceCost2').value) || 0;
+            const purchasePrice2 = parseFloat(document.getElementById('purchasePrice2').value) || 0;
+            
+            // Calculate costs for Motorization B
+            const totalKm = lastCalculation.kmTotal * lastCalculation.years;
+            const fuelCost2Total = calculateFuelCost(
+                engineType2, 
+                totalKm, 
+                consumption2, 
+                fuelCost2, 
+                lastCalculation.marginKm,
+                lastCalculation.marginConsumption,
+                lastCalculation.marginPrice
+            );
+            
+            let bollo2Total = 0;
+            for (let i = 0; i < lastCalculation.years; i++) {
+                bollo2Total += calculateBollo(engineType2, power2, lastCalculation.vehicleAge + i);
+            }
+            
+            const insurance2Total = lastCalculation.results.insuranceTotal; // Same as A
+            const revision2Total = lastCalculation.results.revisionTotal; // Same as A
+            const maintenance2Total = maintenance2 * lastCalculation.years;
+            const service2Total = calculateServiceCost(engineType2, totalKm, lastCalculation.years, serviceCost2);
+            
+            const operative2Cost = fuelCost2Total + bollo2Total + insurance2Total + revision2Total + maintenance2Total + service2Total;
+            const grand2Total = operative2Cost + purchasePrice2;
+            
+            // Display comparison
+            displayComparison(lastCalculation, {
+                engineType: engineType2,
+                fuelCostTotal: fuelCost2Total,
+                bolloTotal: bollo2Total,
+                insuranceTotal: insurance2Total,
+                revisionTotal: revision2Total,
+                maintenanceTotal: maintenance2Total,
+                serviceTotal: service2Total,
+                operativeCost: operative2Cost,
+                purchasePrice: purchasePrice2,
+                grandTotal: grand2Total
+            });
+        }
+
+        function displayComparison(calcA, calcB) {
+            const comparisonResults = document.getElementById('comparisonResults');
+            const years = calcA.years;
+            const insurance = calcA.insurance;
+            const maintenanceA = calcA.maintenance;
+            const revisionCost = calcA.revisionCost;
+            const serviceCostA = calcA.serviceCost;
+            
+            // Calcola numero revisioni e tagliandi
+            const numRevisions = calcA.results.revisionTotal / revisionCost;
+            const numServicesA = calcA.results.serviceTotal / serviceCostA;
+            const serviceCostB = parseFloat(document.getElementById('serviceCost2').value) || 0;
+            const maintenanceB = parseFloat(document.getElementById('maintenance2').value) || 0;
+            const numServicesB = serviceCostB > 0 ? calcB.serviceTotal / serviceCostB : 0;
+            
+            const yearsText = years > 1 ? ` (${years} anni)` : '';
+            const difference = calcB.grandTotal - calcA.results.grandTotal;
+            const diffText = difference > 0 ? `+€${Math.abs(difference).toFixed(2)}` : `-€${Math.abs(difference).toFixed(2)}`;
+            const diffColor = difference > 0 ? '#e74c3c' : '#27ae60';
+            
+            const engineNames = {
+                'benzina': '⛽ Benzina',
+                'diesel': '🛢️ Diesel',
+                'elettrica': '⚡ Elettrica',
+                'plugin': '🔋 Plug-In',
+                'gpl': '🌿 GPL',
+                'metano': '💨 Metano'
+            };
+            
+            const html = `
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Voce di Costo</th>
+                            <th>${engineNames[calcA.engineType]} (A)</th>
+                            <th>${engineNames[calcB.engineType]} (B)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>💰 Carburante${yearsText}</td>
+                            <td>€${calcA.results.fuelCostTotal.toFixed(2)}</td>
+                            <td>€${calcB.fuelCostTotal.toFixed(2)}</td>
+                        </tr>
+                        <tr>
+                            <td>📄 Bollo${yearsText}</td>
+                            <td>€${calcA.results.bolloTotal.toFixed(2)}</td>
+                            <td>€${calcB.bolloTotal.toFixed(2)}</td>
+                        </tr>
+                        <tr>
+                            <td>🛡️ Assicurazione (€${insurance} × ${years})</td>
+                            <td>€${calcA.results.insuranceTotal.toFixed(2)}</td>
+                            <td>€${calcB.insuranceTotal.toFixed(2)}</td>
+                        </tr>
+                        <tr>
+                            <td>🔧 Manutenzione (€${maintenanceA} × ${years})</td>
+                            <td>€${calcA.results.maintenanceTotal.toFixed(2)}</td>
+                            <td>€${calcB.maintenanceTotal.toFixed(2)} (€${maintenanceB} × ${years})</td>
+                        </tr>
+                        <tr>
+                            <td>📋 Revisione (€${revisionCost} × ${numRevisions})</td>
+                            <td>€${calcA.results.revisionTotal.toFixed(2)}</td>
+                            <td>€${calcB.revisionTotal.toFixed(2)}</td>
+                        </tr>
+                        <tr>
+                            <td>🔩 Tagliando</td>
+                            <td>€${calcA.results.serviceTotal.toFixed(2)} (€${serviceCostA} × ${numServicesA})</td>
+                            <td>€${calcB.serviceTotal.toFixed(2)} (€${serviceCostB} × ${numServicesB})</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td><strong>💵 Totale Operativo</strong></td>
+                            <td><strong>€${calcA.results.operativeCost.toFixed(2)}</strong></td>
+                            <td><strong>€${calcB.operativeCost.toFixed(2)}</strong></td>
+                        </tr>
+                        <tr>
+                            <td>🏷️ Prezzo Acquisto</td>
+                            <td>€${calcA.results.purchasePrice.toFixed(2)}</td>
+                            <td>€${calcB.purchasePrice.toFixed(2)}</td>
+                        </tr>
+                        <tr class="grand-total-row">
+                            <td><strong>💰 TOTALE COMPLESSIVO</strong></td>
+                            <td><strong>€${calcA.results.grandTotal.toFixed(2)}</strong></td>
+                            <td><strong>€${calcB.grandTotal.toFixed(2)}</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>📊 Differenza</strong></td>
+                            <td>-</td>
+                            <td style="color: ${diffColor}; font-weight: bold;">${diffText}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            `;
+            
+            comparisonResults.innerHTML = html;
+            comparisonResults.style.display = 'block';
+        }
+
+        // Save Configuration
+        function saveConfiguration() {
+            if (!lastCalculation) {
+                alert('Esegui prima un calcolo!');
+                return;
+            }
+            
+            const name = prompt('Nome configurazione:', `${lastCalculation.engineType} - ${new Date().toLocaleDateString()}`);
+            if (!name) return;
+            
+            const config = {
+                id: Date.now(),
+                name,
+                date: new Date().toISOString(),
+                ...lastCalculation
+            };
+            
+            savedConfigs.push(config);
+            localStorage.setItem('carConfigs', JSON.stringify(savedConfigs));
+            
+            alert('Configurazione salvata!');
+        }
+
+        // Load Saved Configs
+        function loadSavedConfigs() {
+            const configsList = document.getElementById('configsList');
+            
+            if (savedConfigs.length === 0) {
+                configsList.innerHTML = `
+                    <div class="empty-state">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        <p>Nessuna configurazione salvata</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const engineNames = {
+                'benzina': '⛽ Benzina',
+                'diesel': '🛢️ Diesel',
+                'elettrica': '⚡ Elettrica',
+                'plugin': '🔋 Plug-In',
+                'gpl': '🌿 GPL',
+                'metano': '💨 Metano'
+            };
+            
+            configsList.innerHTML = savedConfigs.map(config => `
+                <div class="config-item">
+                    <div class="config-info">
+                        <h4>${config.name}</h4>
+                        <p>${engineNames[config.engineType]} • ${config.kmTotal} km/anno • €${config.results.grandTotal.toFixed(0)}</p>
+                    </div>
+                    <div class="config-actions">
+                        <button onclick="loadConfig(${config.id})" class="secondary">🔄 Carica</button>
+                        <button onclick="deleteConfig(${config.id})" class="danger">🗑️</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadConfig(id) {
+            const config = savedConfigs.find(c => c.id === id);
+            if (!config) return;
+            
+            // Set toggle
+            if (config.years > 1) {
+                isAnnual = true;
+                document.querySelector('.toggle-switch').classList.add('active');
+                document.getElementById('yearsField').classList.add('show');
+                document.getElementById('fixedCostsSection').classList.add('show');
+            }
+            
+            // Fill form
+            document.getElementById('kmTotal').value = config.kmTotal;
+            document.getElementById('years').value = config.years;
+            document.getElementById('engineType').value = config.engineType;
+            document.getElementById('consumption').value = config.consumption;
+            document.getElementById('fuelCost').value = config.fuelCost;
+            document.getElementById('marginKm').value = config.marginKm;
+            document.getElementById('marginConsumption').value = config.marginConsumption;
+            document.getElementById('marginPrice').value = config.marginPrice;
+            document.getElementById('power').value = config.power;
+            document.getElementById('vehicleAge').value = config.vehicleAge;
+            document.getElementById('insurance').value = config.insurance;
+            document.getElementById('revisionCost').value = config.revisionCost;
+            document.getElementById('maintenance').value = config.maintenance;
+            document.getElementById('serviceCost').value = config.serviceCost;
+            document.getElementById('purchasePrice').value = config.purchasePrice;
+            
+            updateConsumptionUnit();
+            
+            // Switch to tab 1
+            switchTab(0);
+            
+            // Recalculate
+            calculate();
+        }
+
+        function deleteConfig(id) {
+            if (!confirm('Eliminare questa configurazione?')) return;
+            
+            savedConfigs = savedConfigs.filter(c => c.id !== id);
+            localStorage.setItem('carConfigs', JSON.stringify(savedConfigs));
+            loadSavedConfigs();
+        }
+    </script>
+</body>
+</html>
